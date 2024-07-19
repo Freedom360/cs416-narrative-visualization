@@ -1,1 +1,194 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Narrative Visualization</title>
+  <link rel="stylesheet" type="text/css" href="styles/fullpage.min.css"></style>
+  <link rel="stylesheet" type="text/css" href="styles/style.css"></style>
+</head>
+<body>
+
+  <div id="fullpage">
+    <div class="section">
+
+      <div class="slide" data-anchor="welcome">
+        <h1>Netflix Original Film IMDB Score Visualization</h1>
+        <div class="intro">
+          <p>&nbsp;</p>
+          <div>Created by Skylar Ripley for CS416 Data Visualization at UIUC</div>
+        </div>
+      </div>
+
+      <div class="slide" data-anchor="dataset">
+        <h2>The Dataset</h2>
+        <div class="intro">
+          <p>
+            The dataset contains all Netflix original films released as of June 1st, 2021, and includes their title,
+            genre, premier date, runtime, IMDB score, and language.
+          </p>
+          <p>
+            The purpose of this visualization is to explore the following question: has Netflix improved at making
+            original films over time?
+            <a class="section-1-button" rel="noopener" href="#charts/about">About the Visualization</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="slide" data-anchor="about">
+        <h2>About the Visualization</h2>
+        <div class="intro">
+          <p>
+            <strong>Interactive Slideshow</strong>
+            This narrative visualization follows an interactive slideshow structure to guide users through
+            various selected scenarios.
+          </p>
+          <p>
+            <strong>Scenes</strong>
+            Three scenes have been included in this visualization using consistent template and layout. User's can
+            navigate through the slideshow by clicking the arrows on the left/right sides of the screen, clicking the
+            navigation dots on top, or using the left/right buttons on a keyboard.
+          </p>
+          <p>
+            <strong>Annotations</strong>
+            Interesting trends are annotated in charts 1 and 2 using black font. These are meant to draw a user's attention
+            to areas of the chart that are important to the overarching question behind the visualization.
+          </p>
+          <p>
+            <strong>Parameters</strong>
+            Charts 2 and 3 include parameters that allow users to interact with the data via filtering. The scenes aim
+            to answer a simple question and these parameters allow users to explore data in more detail.
+          </p>
+          <p>
+            <strong>Triggers</strong>
+            Modifying the filters on charts 2 and 3 triggers changes to the parameters discussed above and updates the
+            charts to reflect the event.
+          </p>
+        </div>
+      </div>
+      
+      <div class="slide" data-anchor="chart1">
+        <h3>Number of Netflix Originals by Year</h3>
+        <div class="chart chart1">
+          <svg id="svg1"></svg>
+        </div>
+        <div class="intro">
+          <p>
+            This chart shows that the number of Netflix originals has increased each year over the past several years.
+            Note that the dataset includes originals up to June 1st, 2021, so although it looks like less originals were
+            produced in 2021 the reality is that Netflix is on track to produce a similar number of originals to 2020.
+          </p>
+          <p>
+            This charts proves that Netflix is continuing to invest more and more in original films, but the
+            questions still stands, have they improved film quality over time? Next, let's take a look at average IMDB
+            scores for each year to move closer to an answer.
+          </p>
+        </div>
+      </div>
+      <div class="slide" data-anchor="chart2">
+        <h3>Average IMDB Score of Netflix Originals by Year</h3>
+        <div class="chart chart2">
+          <svg id="svg2"></svg>
+          <input type="checkbox" checked="checked" value="2014" id="Action" onClick="updateChart2Data()">Action</input>
+          <input type="checkbox" checked="checked" value="2015" id="Adventure" onClick="updateChart2Data()">Adventure</input>
+          <input type="checkbox" checked="checked" value="2016" id="Animation" onClick="updateChart2Data()">Animation</input>
+          <input type="checkbox" checked="checked" value="2017" id="Anime" onClick="updateChart2Data()">Anime</input>
+          <input type="checkbox" checked="checked" value="2018" id="Christmas" onClick="updateChart2Data()">Christmas</input>
+          <input type="checkbox" checked="checked" value="2019" id="Comedy" onClick="updateChart2Data()">Comedy</input>
+          <input type="checkbox" checked="checked" value="2020" id="Crime" onClick="updateChart2Data()">Crime</input>
+          <input type="checkbox" checked="checked" value="2021" id="Documentary" onClick="updateChart2Data()">Documentary</input>
+          <input type="checkbox" checked="checked" value="2021" id="Drama" onClick="updateChart2Data()">Drama</input>
+          <input type="checkbox" checked="checked" value="2021" id="Fantasy" onClick="updateChart2Data()">Fantasy</input>
+          <input type="checkbox" checked="checked" value="2021" id="Family" onClick="updateChart2Data()">Family</input>
+          <input type="checkbox" checked="checked" value="2021" id="Musical" onClick="updateChart2Data()">Musical</input>
+          <input type="checkbox" checked="checked" value="2021" id="Mystery" onClick="updateChart2Data()">Mystery</input>
+          <input type="checkbox" checked="checked" value="2021" id="Other" onClick="updateChart2Data()">Other</input>
+          <input type="checkbox" checked="checked" value="2021" id="Romance" onClick="updateChart2Data()">Romance</input>
+          <input type="checkbox" checked="checked" value="2021" id="Science-Fiction" onClick="updateChart2Data()">Science Fiction</input>
+          <input type="checkbox" checked="checked" value="2021" id="Sports-film" onClick="updateChart2Data()">Sports film</input>
+          <input type="checkbox" checked="checked" value="2021" id="War" onClick="updateChart2Data()">War</input>
+          <input type="checkbox" checked="checked" value="2021" id="Western" onClick="updateChart2Data()">Western</input>
+        </div>
+        <div class="intro">
+          <p>
+            This chart shows that average IMDB scores have actually steadily declined over the past several years
+            starting in 2016. So far, Netflix original films in 2021 have received the worst scores since 2014.
+            Check/uncheck the checkboxes to see how scores have changed for a given set of genres.
+          </p>
+          <p>
+            This chart ultimately answers the question of whether or not Netflix has gotten better at producing original
+            films - on average, they haven't. That being said, it's difficult to see how all genres have scored for a given year.
+            Next (and finally), let's take a look at average scores for each genre to provide even more insight into
+            the data.
+          </p>
+        </div>
+      </div>
+      <div class="slide" data-anchor="chart3">
+        <h3>Average IMDB Score of Netflix Originals by Genre</h3>
+        <div class="chart chart3">
+          <svg id="svg3"></svg>
+          <input type="checkbox" checked="checked" value="2014" id="checkbox-2014" onClick="updateChart3Data()">2014</input>
+          <input type="checkbox" checked="checked" value="2015" id="checkbox-2015" onClick="updateChart3Data()">2015</input>
+          <input type="checkbox" checked="checked" value="2016" id="checkbox-2016" onClick="updateChart3Data()">2016</input>
+          <input type="checkbox" checked="checked" value="2017" id="checkbox-2017" onClick="updateChart3Data()">2017</input>
+          <input type="checkbox" checked="checked" value="2018" id="checkbox-2018" onClick="updateChart3Data()">2018</input>
+          <input type="checkbox" checked="checked" value="2019" id="checkbox-2019" onClick="updateChart3Data()">2019</input>
+          <input type="checkbox" checked="checked" value="2020" id="checkbox-2020" onClick="updateChart3Data()">2020</input>
+          <input type="checkbox" checked="checked" value="2021" id="checkbox-2021" onClick="updateChart3Data()">2021</input>
+        </div>
+        <div class="intro">
+          <p>
+            This chart shows that Netflix excels at producing original films in the Animation, Crime, Documentary, and
+            War genres. Check/uncheck the checkboxes to see how genres have scored for a given set of years.
+          </p>
+          <p>
+            From the past 3 charts it's clear that although Netflix is producing more and more original films the quality
+            of these films (according to IMDB) has declined over the past several years, but specific genres have clearly
+            outperformed others.
+          </p>
+        </div>
+      </div>
+      <div class="slide" data-anchor="source">
+        <h2>Sources</h2>
+        <div class="intro">
+          <p>
+            <strong>Dataset</strong><br/>
+            <a href="https://www.kaggle.com/luiscorter/netflix-original-films-imdb-scores" target="_blank">
+              https://www.kaggle.com/luiscorter/netflix-original-films-imdb-scores
+            </a>
+          </p>
+          <p>
+            <strong>Fullpage.js (used for slideshow)</strong><br/>
+            <a href="https://github.com/alvarotrigo/fullPage.js" target="_blank">
+              https://github.com/alvarotrigo/fullPage.js
+            </a>
+          </p>
+          <p>
+            <strong>Source code</strong><br/>
+            <a href="https://github.com/skyripley/cs416-data-visualization" target="_blank">
+              https://github.com/skyripley/cs416-data-visualization
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <script src="scripts/scrolloverflow.min.js"></script>
+  <script src="scripts/fullpage.min.js"></script>
+  <script src="scripts/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-color.v1.min.js"></script>
+  <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
+  <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+  <script>
+    var charts = {};
+  </script>
+  <script src="scripts/chart1.js"></script>
+  <script src="scripts/chart2.js"></script>
+  <script src="scripts/chart3.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
