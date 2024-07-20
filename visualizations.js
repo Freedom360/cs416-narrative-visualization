@@ -49,7 +49,7 @@ function drawScene1() {
         .attr("y", d => y(d.count))
         .attr("height", d => 600 - y(d.count))
         .attr("width", x.bandwidth())
-        .attr("fill", "steelblue");
+        // .attr("fill", "steelblue");
 
     svg.append("g").call(d3.axisLeft(y));
     svg.append("g").attr("transform", "translate(0,600)").call(d3.axisBottom(x));
