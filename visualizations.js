@@ -1,5 +1,10 @@
 let currentScene = 1;
 
+d3.csv("data/Unicorn_Clean.csv").then(data => {
+    unicornData = data;
+    updateScene();
+});
+
 document.getElementById("prevButton").addEventListener("click", () => {
     if (currentScene > 1) currentScene--;
     updateScene();
