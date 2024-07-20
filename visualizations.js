@@ -1,8 +1,7 @@
 var currentScene = 1;
-var unicornData = [];
 
 // Load data and initialize the first scene
-d3.csv("https://github.com/Freedom360/cs416-narrative-visualization/blob/e8fc96c52fa3ba3c47c3b1eb32bf65ac3802d80a/data/Unicorn_Clean.csv").then(function(data) {
+d3.csv("https://raw.githubusercontent.com/Freedom360/cs416-narrative-visualization/main/data/Unicorn_Clean.csv").then(function(data) {
     data.forEach(function(d) {
         d.valuation = +d["Valuation ($B)"];
     });
