@@ -22,10 +22,44 @@ function updateScene() {
     else if (currentScene === 4) drawScene4();
 }
 
+// function drawScene1() {
+//     d3.select("#visualization").html("");
+//     // Your D3.js code for the first scene
+// }
+
 function drawScene1() {
     d3.select("#visualization").html("");
-    // Your D3.js code for the first scene
+
+    const svg = d3.select("#visualization").append("svg")
+        .attr("width", 800)
+        .attr("height", 600);
+
+    // Aggregate data by country
+    const countryData = d3.group(unicornData, d => d.country);
+    const countries = Array.from(countryData, ([country, startups]) => ({ country, count: startups.length }));
+
+    const x = d3.scaleBand().domain(countries.map(d => d.country)).range([0, 800]).padding(0.1);
+    const y = d3.scaleLinear().domain([0, d3.max(countries, d => d.count)]).nice().range([600, 0]);
+
+    svg.append("g")
+        .selectAll("rect")
+        .data(countries)
+        .enter().append("rect")
+        .attr("x", d => x(d.country))
+        .attr("y", d => y(d.count))
+        .attr("height", d => 600 - y(d.count))
+        .attr("width", x.bandwidth())
+        .attr("fill", "steelblue");
+
+    svg.append("g").call(d3.axisLeft(y));
+    svg.append("g").attr("transform", "translate(0,600)").call(d3.axisBottom(x));
+
+    // Add annotations
+    addAnnotations(svg, [
+        { note: { label: "Highest count", title: "Country with most unicorns" }, x: x(countries[0].country), y: y(countries[0].count), dy: -30, dx: 30 }
+    ]);
 }
+
 
 function drawScene2() {
     d3.select("#visualization").html("");
