@@ -1,10 +1,12 @@
 var currentScene = 1;
+var data;
 
 // Load data and initialize the first scene
 d3.csv("https://raw.githubusercontent.com/Freedom360/cs416-narrative-visualization/main/data/Unicorn_Clean.csv").then(function(data) {
     data.forEach(function(d) {
         d.valuation = +d["Valuation ($B)"];
     });
+    data = data;
     console.log(data[0]);
   });
 
@@ -22,9 +24,9 @@ document.getElementById("nextButton").addEventListener("click", function() {
 function updateScene() {
     console.log("Updating to scene:", currentScene);
     if (currentScene === 1) drawScene1();
-    else if (currentScene === 2) drawScene2();
-    else if (currentScene === 3) drawScene3();
-    else if (currentScene === 4) drawScene4();
+    // else if (currentScene === 2) drawScene2();
+    // else if (currentScene === 3) drawScene3();
+    // else if (currentScene === 4) drawScene4();
 }
 
 
