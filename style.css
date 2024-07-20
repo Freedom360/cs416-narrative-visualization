@@ -16,3 +16,9 @@ button {
     padding: 10px 20px;
     font-size: 16px;
 }
+
+.mesh {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 0.5px;
+}
