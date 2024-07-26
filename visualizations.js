@@ -32,10 +32,12 @@ document.getElementById('nextButton').addEventListener('click', function () {
 function updateScene() {
   console.log('Updating to scene:', currentScene);
   if (currentScene === 1) drawScene1();
-  // else if (currentScene === 2) drawScene2();
+  else if (currentScene === 2) drawScene2();
   // else if (currentScene === 3) drawScene3();
   // else if (currentScene === 4) drawScene4();
 }
+
+
 
 // map unicorndata country to topojson country name
 const countryMapping = {
@@ -157,3 +159,99 @@ function drawScene1() {
 
 }
 
+
+
+// creating visualization for scene 2
+function drawScene2() {
+	
+	initializeDropdown();
+
+  // Filter and aggregate data
+	const selectedCountry = d3.select('#countryDropdown').property('value');
+	const filteredData = selectedCountry === 'all' ? unicornData : unicornData.filter(d => d.Country === selectedCountry);
+
+	const industryValuation = d3.rollup(unicornData, v => d3.sum(v, d => d.valuation), d => d.Industry);
+	const industryValuationArray = Array.from(industryValuation, ([industry, valuation]) => ({ industry, valuation }));
+  
+	d3.select('#visualization').html('');
+  
+	const margin = { top: 40, right: 40, bottom: 200, left: 60 };
+	const width = 960 - margin.left - margin.right;
+	const height = 500 - margin.top - margin.bottom;
+  
+	const svg = d3.select('#visualization')
+	  .append('svg')
+	  .attr('width', width + margin.left + margin.right)
+	  .attr('height', height + margin.top + margin.bottom)
+	  .append('g')
+	  .attr('transform', `translate(${margin.left},${margin.top})`);
+  
+	const x = d3.scaleBand()
+	  .domain(industryValuationArray.map(d => d.industry))
+	  .range([0, width])
+	  .padding(0.1);
+  
+	const y = d3.scaleLinear()
+	  .domain([0, d3.max(industryValuationArray, d => d.valuation)])
+	  .nice()
+	  .range([height, 0]);
+  
+	svg.append('g')
+	  .selectAll('.bar')
+	  .data(industryValuationArray)
+	  .enter().append('rect')
+	  .attr('class', 'bar')
+	  .attr('x', d => x(d.industry))
+	  .attr('y', d => y(d.valuation))
+	  .attr('width', x.bandwidth())
+	  .attr('height', d => height - y(d.valuation))
+	  .attr('fill', '#1f77b4');
+  
+	svg.append('g')
+	  .attr('class', 'x-axis')
+	  .attr('transform', `translate(0,${height})`)
+	  .call(d3.axisBottom(x))
+	  .selectAll('text')
+	  .attr('dy', '.35em')
+	  .attr('dx', '-.8em')
+	  .attr('transform', 'rotate(-45)')
+	  .style('text-anchor', 'end');
+  
+	svg.append('g')
+	  .attr('class', 'y-axis')
+	  .call(d3.axisLeft(y));
+  
+	svg.append('text')
+	  .attr('x', width / 2)
+	  .attr('y', -20 +height + margin.bottom)
+	  .attr('text-anchor', 'middle')
+	  .text('Industry');
+  
+	svg.append('text')
+	  .attr('transform', 'rotate(-90)')
+	  .attr('y', 15 - margin.left)
+	  .attr('x', 0 - (height / 2))
+	  .attr('text-anchor', 'middle')
+	  .text('Valuation ($B)');
+}
+
+function initializeDropdown() {
+	const dropdownContainer = d3.select('#dropdownContainer').html('');
+	const dropdown = dropdownContainer.append('select').attr('id', 'countryDropdown');
+  
+	dropdown.append('option').attr('value', 'all').text('All Countries');
+  
+	const countries = Array.from(new Set(unicornData.map(d => d.Country)));
+  
+	countries.forEach(country => {
+	  dropdown.append('option').attr('value', country).text(country);
+	});
+  
+	dropdown.on('change', function() {
+		const selectedCountry = d3.select(this).property('value');
+		drawScene2();
+		dropdown.property('value', selectedCountry);
+	});
+
+	dropdown.property('value', 'all')
+  }
