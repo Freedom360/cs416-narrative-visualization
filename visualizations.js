@@ -1,4 +1,4 @@
-var currentScene = 1;
+var currentScene = 0;
 var unicornData; // global variable
 
 // Load data
@@ -20,7 +20,7 @@ d3.csv(
 
   // creating buttons and updating scene 
 document.getElementById('prevButton').addEventListener('click', function () {
-  if (currentScene > 1) currentScene--;
+  if (currentScene > 0) currentScene--;
   updateScene();
 });
 
@@ -32,12 +32,38 @@ document.getElementById('nextButton').addEventListener('click', function () {
 // function that changes the scene
 function updateScene() {
   console.log('Updating to scene:', currentScene);
-  if (currentScene === 1) drawScene1();
-  else if (currentScene === 2) drawScene2();
-  else if (currentScene === 3) drawScene3();
-  // else if (currentScene === 4) drawScene4();
+  if (currentScene === 0) {
+    drawScene0();
+    document.getElementById('dropdownContainer').style.display = 'none';
+    document.getElementById('prevButton').style.display = 'none'; 
+  }
+  else if (currentScene === 1) {
+  drawScene1();
+  document.getElementById('dropdownContainer').style.display = 'none';
+  document.getElementById('prevButton').style.display = 'block';
+  }
+
+  else if (currentScene === 2) {
+    drawScene2();
+    document.getElementById('dropdownContainer').style.display = 'block';
+    document.getElementById('prevButton').style.display = 'block';
+  }
+  else if (currentScene === 3) {
+    drawScene3();
+    document.getElementById('dropdownContainer').style.display = 'block';
+    document.getElementById('nextButton').style.display = 'none';
+  }
+
 }
 
+function drawScene0() {
+  d3.select('#visualization').html(`
+  <header>
+    <h1>Welcome to Our Data Visualization Platform</h1>
+    <p>Explore insightful charts and analytics to understand data better. Our platform provides interactive visualizations to help you analyze trends and patterns in the data. Whether you're interested in geographical distributions, industry valuations, or temporal changes, you'll find the tools you need to gain valuable insights.</p>
+  </header>
+`);
+}
 
 
 // map unicorndata country to topojson country name
