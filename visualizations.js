@@ -296,10 +296,10 @@ function updateLineChart(selectedCountry) {
   const filteredData = selectedCountry === 'all' ? unicornData : unicornData.filter(d => d.Country === selectedCountry);
 
   const yearlyValuation = d3.rollup(filteredData, v => d3.sum(v, d => d.valuation), d => d.year);
-  console.log(yearlyValuation);
   const yearlyValuationArray = Array.from(yearlyValuation, ([year, valuation]) => ({ year, valuation }));
   yearlyValuationArray.sort((a, b) => a.year - b.year);
-  console.log('array:', yearlyValuationArray);
+
+  const countryAverage = d3.mean(yearlyValuationArray, d => d.valuation);
   d3.select('#visualization').html('');
 
   const margin = { top: 40, right: 40, bottom: 60, left: 60 };
@@ -382,7 +382,7 @@ function updateLineChart(selectedCountry) {
 
   svg.append('text')
     .attr('x', width / 2)
-    .attr('y', height + margin.bottom - 20)
+    .attr('y', height + margin.bottom - 0)
     .attr('text-anchor', 'middle')
     .text('Year');
 
@@ -394,5 +394,40 @@ function updateLineChart(selectedCountry) {
     .text('Valuation ($B)');
 
 
-;
-}
+      // Draw the global average line
+  svg.append('line')
+  .attr('x1', 0)
+  .attr('y1', y(countryAverage))
+  .attr('x2', width)
+  .attr('y2', y(countryAverage))
+  .attr('stroke', 'red')
+  .attr('stroke-width', 2)
+  .attr('stroke-dasharray', '4,4');
+
+
+  // Add annotation for the global average line
+  const annotations = [{
+    note: {
+      title: "Average Valuation:",
+      label: `$${countryAverage.toFixed(2)}B`,
+      wrap: 0
+    },
+    type: d3.annotationLabel,
+    x: width - 10,  // Position at the end of the chart
+    y: y(countryAverage) - 10,  // Position slightly above the line
+    dx: 10,  // Offset for annotation
+    dy: -10,
+    subject: {
+      radius: 5,  // Radius of the dot at the end of the annotation line
+      radiusPadding: 5
+    }
+  }];
+
+  const makeAnnotations = d3.annotation()
+    .annotations(annotations);
+
+  svg.append('g')
+    .attr('class', 'annotations')
+    .call(makeAnnotations);
+    ;
+  }
