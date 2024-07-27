@@ -8,6 +8,7 @@ d3.csv(
   .then(function (data) {
     data.forEach(function (d) {
       d.valuation = +d['Valuation ($B)'];
+      d.year = new Date(d['Date Joined']).getFullYear();
     });
     unicornData = data;
     console.log(unicornData[0]);
@@ -33,7 +34,7 @@ function updateScene() {
   console.log('Updating to scene:', currentScene);
   if (currentScene === 1) drawScene1();
   else if (currentScene === 2) drawScene2();
-  // else if (currentScene === 3) drawScene3();
+  else if (currentScene === 3) drawScene3();
   // else if (currentScene === 4) drawScene4();
 }
 
@@ -175,7 +176,12 @@ function initializeDropdown() {
 
   dropdown.on('change', function() {
     const selectedCountry = d3.select(this).property('value');
-    updateChart(selectedCountry);
+    if (currentScene === 2)
+      updateBarChart(selectedCountry);
+      console.log('bar chart updated')
+    if (currentScene === 3)
+      updateLineChart(selectedCountry);
+      console.log('line chart updated')
   });
 
   dropdown.property('value', 'all');
@@ -184,10 +190,10 @@ function initializeDropdown() {
 // Create the initial visualization
 function drawScene2() {
   initializeDropdown();
-  updateChart('all');
+  updateBarChart('all');
 }
 
-function updateChart(selectedCountry) {
+function updateBarChart(selectedCountry) {
   const filteredData = selectedCountry === 'all' ? unicornData : unicornData.filter(d => d.Country === selectedCountry);
 
   const industryValuation = d3.rollup(filteredData, v => d3.sum(v, d => d.valuation), d => d.Industry);
@@ -225,7 +231,27 @@ function updateChart(selectedCountry) {
     .attr('y', d => y(d.valuation))
     .attr('width', x.bandwidth())
     .attr('height', d => height - y(d.valuation))
-    .attr('fill', '#1f77b4');
+    .attr('fill', '#1f77b4')
+    .on('mouseover', function(event, d) {
+      tooltip.transition().duration(200).style('opacity', .9);
+      tooltip.html(`Valuation: $${d.valuation.toLocaleString()}B`)
+        .style('left', `${event.pageX + 5}px`)
+        .style('top', `${event.pageY - 28}px`)
+        .style('visibility', 'visible');
+    })
+    .on('mouseout', function() {
+      tooltip.transition().duration(500).style('opacity', 0)
+      .style('visibility', 'hidden');
+    });
+
+    const tooltip = d3.select('#tooltip')
+    .style('position', 'absolute')
+    .style('background', 'lightgray')
+    .style('padding', '5px')
+    .style('border-radius', '3px')
+    .style('pointer-events', 'none')
+    .style('visibility', 'hidden');
+
 
   svg.append('g')
     .attr('class', 'x-axis')
@@ -255,3 +281,118 @@ function updateChart(selectedCountry) {
     .text('Valuation ($B)');
 }
 
+function drawScene3() {
+  // Initialize the dropdown only if it's not already initialized
+  if (d3.select('#countryDropdown').empty()) {
+    initializeDropdown();
+  }
+  updateLineChart(selectedCountry = 'all');
+
+}
+
+
+
+function updateLineChart(selectedCountry) {
+  const filteredData = selectedCountry === 'all' ? unicornData : unicornData.filter(d => d.Country === selectedCountry);
+
+  const yearlyValuation = d3.rollup(filteredData, v => d3.sum(v, d => d.valuation), d => d.year);
+  console.log(yearlyValuation);
+  const yearlyValuationArray = Array.from(yearlyValuation, ([year, valuation]) => ({ year, valuation }));
+  yearlyValuationArray.sort((a, b) => a.year - b.year);
+  console.log('array:', yearlyValuationArray);
+  d3.select('#visualization').html('');
+
+  const margin = { top: 40, right: 40, bottom: 60, left: 60 };
+  const width = 960 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
+
+  const svg = d3.select('#visualization')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand()
+    .domain(yearlyValuationArray.map(d => d.year))
+    .range([0, width])
+    .padding(0.1);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(yearlyValuationArray, d => d.valuation)])
+    .nice()
+    .range([height, 0]);
+
+  // Line generator
+  const line = d3.line()
+    .x(d => x(d.year) + x.bandwidth() / 2)
+    .y(d => y(d.valuation))
+
+  // Add the line path
+  svg.append('path')
+    .datum(yearlyValuationArray)
+    .attr('class', 'line')
+    .attr('d', line)
+    .attr('fill', 'none')
+    .attr('stroke', '#1f77b4')
+    .attr('stroke-width', 2);
+
+  // Add circles for data points
+  svg.selectAll('.dot')
+    .data(yearlyValuationArray)
+    .enter().append('circle')
+    .attr('class', 'dot')
+    .attr('cx', d => x(d.year) + x.bandwidth() / 2)
+    .attr('cy', d => y(d.valuation))
+    .attr('r', 4)
+    .attr('fill', '#1f77b4')
+    .on('mouseover', function(event, d) {
+      tooltip.transition().duration(200).style('opacity', .9);
+      tooltip.html(`Valuation: $${d.valuation.toLocaleString()}B`)
+        .style('left', `${event.pageX + 5}px`)
+        .style('top', `${event.pageY - 28}px`)
+        .style('visibility', 'visible');
+    })
+    .on('mouseout', function() {
+      tooltip.transition().duration(500).style('opacity', 0)
+      .style('visibility', 'hidden');
+    });
+
+    const tooltip = d3.select('#tooltip')
+    .style('position', 'absolute')
+    .style('background', 'lightgray')
+    .style('padding', '5px')
+    .style('border-radius', '3px')
+    .style('pointer-events', 'none')
+    .style('visibility', 'hidden');
+
+  svg.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(x))
+    .selectAll('text')
+    .attr('dy', '.35em')
+    .attr('dx', '-.8em')
+    .attr('transform', 'rotate(-45)')
+    .style('text-anchor', 'end');
+
+  svg.append('g')
+    .attr('class', 'y-axis')
+    .call(d3.axisLeft(y));
+
+  svg.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + margin.bottom - 20)
+    .attr('text-anchor', 'middle')
+    .text('Year');
+
+  svg.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('y', 15 - margin.left)
+    .attr('x', 0 - (height / 2))
+    .attr('text-anchor', 'middle')
+    .text('Valuation ($B)');
+
+
+;
+}
