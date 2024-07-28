@@ -59,8 +59,19 @@ function updateScene() {
 function drawScene0() {
   d3.select('#visualization').html(`
   <header>
-    <h1>Welcome to Our Data Visualization Platform</h1>
-    <p>Explore insightful charts and analytics to understand data better. Our platform provides interactive visualizations to help you analyze trends and patterns in the data. Whether you're interested in geographical distributions, industry valuations, or temporal changes, you'll find the tools you need to gain valuable insights.</p>
+    <h1>
+    Startup Unicorn Narrative Visualization
+    </h1>
+    <p>
+    This website visualizes different aspects of startup unicorns globally,
+    looking at the relationships between these startup's industry, valuation, and country.
+    </p>
+    <p>
+    <a href="https://www.kaggle.com/datasets/niekvanderzwaag/unicorn-startups-cleaned">Data</a>
+    </p>
+    <p>
+    <a href="https://github.com/Freedom360/cs416-narrative-visualization">Code</a>
+    </p>
   </header>
 `);
 }
@@ -74,8 +85,18 @@ const countryMapping = {
 // creating visualization for scene 1
 function drawScene1() {
   console.log('draw 1');
-  d3.select('#visualization').html('');
 
+  d3.select('#visualization').html(`
+  <header>
+    <h1>
+    Global View of Startup Unicorns
+    </h1>
+    <p>
+    This visualization provides an overview of startup unicorns globally. 
+    Hovering over a country will show the total number of startups from there.
+    </p>
+  </header>
+`);
   const width = 960;
   const height = 600;
 
@@ -225,7 +246,18 @@ function updateBarChart(selectedCountry) {
   const industryValuation = d3.rollup(filteredData, v => d3.sum(v, d => d.valuation), d => d.Industry);
   const industryValuationArray = Array.from(industryValuation, ([industry, valuation]) => ({ industry, valuation }));
 
-  d3.select('#visualization').html('');
+  d3.select('#visualization').html(`
+  <header>
+    <h1>
+    Valuation ($B) by Industry
+    </h1>
+    <p>
+    This visualization provides a breakdown of the startups's valuation by industry. 
+    Hovering over a bar will show the total valuation for that industry. 
+    Selecting a country from the dropdown menu will show the distribution for that specific country.
+    </p>
+  </header>
+`);
 
   const margin = { top: 40, right: 40, bottom: 200, left: 60 };
   const width = 960 - margin.left - margin.right;
@@ -326,7 +358,20 @@ function updateLineChart(selectedCountry) {
   yearlyValuationArray.sort((a, b) => a.year - b.year);
 
   const countryAverage = d3.mean(yearlyValuationArray, d => d.valuation);
-  d3.select('#visualization').html('');
+  // d3.select('#visualization').html('');
+  d3.select('#visualization').html(`
+  <header>
+    <h1>
+    Valuation ($B) by Year
+    </h1>
+    <p>
+    This visualization provides a breakdown of the startups' valuation by the year. 
+    Hovering over a point will show the valuation at a specific year. 
+    Selecting a country from the dropdown menu will show how total valuation changed over the years for that country.
+    The dotted average valuation provides a reference to compare valuation at different years.
+    </p>
+  </header>
+`);
 
   const margin = { top: 40, right: 40, bottom: 60, left: 60 };
   const width = 960 - margin.left - margin.right;
