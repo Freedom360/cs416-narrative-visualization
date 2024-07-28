@@ -12,7 +12,7 @@ d3.csv(
     });
     unicornData = data;
     console.log(unicornData[0]);
-    updateScene(); // Initialize the first scene after data is loaded
+    updateScene(); 
   })
   .catch(function (error) {
     console.error('Error loading the CSV file:', error);
@@ -25,7 +25,7 @@ document.getElementById('prevButton').addEventListener('click', function () {
 });
 
 document.getElementById('nextButton').addEventListener('click', function () {
-  if (currentScene < 4) currentScene++;
+  if (currentScene < 3) currentScene++;
   updateScene();
 });
 
@@ -36,6 +36,7 @@ function updateScene() {
     drawScene0();
     document.getElementById('dropdownContainer').style.display = 'none';
     document.getElementById('prevButton').style.display = 'none'; 
+    document.getElementById('nextButton').style.display = 'block';
   }
   else if (currentScene === 1) {
   drawScene1();
@@ -56,6 +57,7 @@ function updateScene() {
 
 }
 
+// home page
 function drawScene0() {
   d3.select('#visualization').html(`
   <header>
@@ -75,7 +77,7 @@ function drawScene0() {
   </header>
 `);
 }
-
+// scene 1 start
 
 // map unicorndata country to topojson country name
 const countryMapping = {
@@ -208,6 +210,7 @@ function drawScene1() {
 }
 
 
+// dropdown functionality
 
 function initializeDropdown() {
   const dropdownContainer = d3.select('#dropdownContainer').html('');
@@ -220,7 +223,7 @@ function initializeDropdown() {
   countries.forEach(country => {
     dropdown.append('option').attr('value', country).text(country);
   });
-
+  // change chart when country is selected from dropdown
   dropdown.on('change', function() {
     const selectedCountry = d3.select(this).property('value');
     if (currentScene === 2)
@@ -234,15 +237,17 @@ function initializeDropdown() {
   dropdown.property('value', 'all');
 }
 
-// Create the initial visualization
+// scene 2 starts
+
 function drawScene2() {
   initializeDropdown();
   updateBarChart('all');
 }
-
+// draw bar chart
 function updateBarChart(selectedCountry) {
   const filteredData = selectedCountry === 'all' ? unicornData : unicornData.filter(d => d.Country === selectedCountry);
 
+  // filterd data for industry and valuation
   const industryValuation = d3.rollup(filteredData, v => d3.sum(v, d => d.valuation), d => d.Industry);
   const industryValuationArray = Array.from(industryValuation, ([industry, valuation]) => ({ industry, valuation }));
 
@@ -290,6 +295,7 @@ function updateBarChart(selectedCountry) {
     .attr('width', x.bandwidth())
     .attr('height', d => height - y(d.valuation))
     .attr('fill', '#1f77b4')
+    // tooltip info
     .on('mouseover', function(event, d) {
       tooltip.transition().duration(200).style('opacity', .9);
       tooltip.html(`Valuation: $${d.valuation.toLocaleString()}B`)
@@ -339,8 +345,9 @@ function updateBarChart(selectedCountry) {
     .text('Valuation ($B)');
 }
 
+// scene 3 starts 
+
 function drawScene3() {
-  // Initialize the dropdown only if it's not already initialized
   if (d3.select('#countryDropdown').empty()) {
     initializeDropdown();
   }
@@ -349,16 +356,18 @@ function drawScene3() {
 }
 
 
-
+// draw line chart and update based on country
 function updateLineChart(selectedCountry) {
   const filteredData = selectedCountry === 'all' ? unicornData : unicornData.filter(d => d.Country === selectedCountry);
 
+  // filtered data for year and valuation
   const yearlyValuation = d3.rollup(filteredData, v => d3.sum(v, d => d.valuation), d => d.year);
   const yearlyValuationArray = Array.from(yearlyValuation, ([year, valuation]) => ({ year, valuation }));
   yearlyValuationArray.sort((a, b) => a.year - b.year);
 
+  // average valuation for each country
   const countryAverage = d3.mean(yearlyValuationArray, d => d.valuation);
-  // d3.select('#visualization').html('');
+
   d3.select('#visualization').html(`
   <header>
     <h1>
@@ -394,12 +403,12 @@ function updateLineChart(selectedCountry) {
     .nice()
     .range([height, 0]);
 
-  // Line generator
+  // create line
   const line = d3.line()
     .x(d => x(d.year) + x.bandwidth() / 2)
     .y(d => y(d.valuation))
 
-  // Add the line path
+  // draw line
   svg.append('path')
     .datum(yearlyValuationArray)
     .attr('class', 'line')
@@ -408,7 +417,7 @@ function updateLineChart(selectedCountry) {
     .attr('stroke', '#1f77b4')
     .attr('stroke-width', 2);
 
-  // Add circles for data points
+  // circles for data points
   svg.selectAll('.dot')
     .data(yearlyValuationArray)
     .enter().append('circle')
@@ -465,7 +474,7 @@ function updateLineChart(selectedCountry) {
     .text('Valuation ($B)');
 
 
-      // Draw the global average line
+      // Draw the country average line
   svg.append('line')
   .attr('x1', 0)
   .attr('y1', y(countryAverage))
@@ -476,7 +485,7 @@ function updateLineChart(selectedCountry) {
   .attr('stroke-dasharray', '4,4');
 
 
-  // Add annotation for the global average line
+  // Add annotation for the country average line
   const annotations = [{
     note: {
       title: "Average Valuation:",
